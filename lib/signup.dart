@@ -1,12 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
-
+import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class SignUp extends StatefulWidget {
-  SignUp({Key key}) : super(key: key);
+  SignUp();
 
   @override
   _SignUpState createState() => _SignUpState();
@@ -24,8 +25,15 @@ class _SignUpState extends State<SignUp> {
   bool _loadingPath = false;
   String _extension;
   String _directoryPath;
-  List<String> _locations = ['india', 'usa', 'australia', 'uk']; 
+  // List<String> _locations = ['india', 'usa', 'australia', 'uk'];
   String _selectedLocation;
+  List<String> _locations = [];
+
+  @override
+  void initState() {
+    fetchCountries();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +107,7 @@ class _SignUpState extends State<SignUp> {
                   borderSide: new BorderSide(),
                 ),
               ),
-              value: "india",
+              value: "India",
               onChanged: (newValue) {
                 setState(() {
                   _selectedLocation = newValue;
@@ -229,5 +237,16 @@ class _SignUpState extends State<SignUp> {
         );
       }
     }
+  }
+
+  Future<void> fetchCountries() async {
+    var dio = Dio();
+    Response response = await dio
+        .get('http://www.json-generator.com/api/json/get/bTVoyXnuKW?indent=2');
+    List<dynamic> countries = response.data.toList();
+    var sList = List<String>.from(countries);
+    setState(() {
+      _locations.addAll(sList);
+    });
   }
 }
